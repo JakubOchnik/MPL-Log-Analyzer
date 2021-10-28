@@ -15,7 +15,7 @@ void InternalEntry::parseError(std::string& rawLine, std::ifstream& file)
         message += line;
         changedPos = true;
     }
-    //
+
     if(changedPos)
     {
         file.seekg(file.tellg()-line.size()-1);

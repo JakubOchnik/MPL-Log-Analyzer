@@ -20,12 +20,9 @@ LogLine::LogLine()
 }
 
 using pt = boost::posix_time::ptime;
-using ps = ParseStage;
 
 void LogLine::parseLine(std::string& rawLine)
 {
-    std::vector<ParseStage> stages = {ps::dateTime,ps::src,ps::type,ps::thd,ps::opt_id,ps::opt_cli_comp,ps::msg,ps::structure};
-    ParseStage curStage = stages[0];
     std::stringstream ss;
     std::size_t pos;
     // time
@@ -110,19 +107,10 @@ std::variant<std::string, pt, consts::LineType, long long> LogLine::getLineParam
 {
     if(lineContents.find(name) == lineContents.end())
     {
+        // TODO error handling
         return "error";
     }
     return lineContents[name];
-}
-
-std::string LogLine::getSource() const
-{
-    return source;
-}
-
-std::string LogLine::getMsg() const
-{
-    return message;
 }
 
 const std::string LogLine::getFormattedOutput()

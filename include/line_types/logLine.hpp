@@ -35,8 +35,8 @@ class LogLine: public BaseLine
     std::string source = "";
     pt time;
     consts::LineType type = consts::LineType::debug;
-    long long thd = -1;
-    long long id = -1;
+    long long thd = 0;
+    long long id = 0;
     std::string component = "";
 
     std::string message = "";
@@ -50,10 +50,6 @@ class LogLine: public BaseLine
 public:
     LogLine(std::string& rawLine);
     LogLine();
-
-    pt getDateTime() const;
-    std::string getSource() const;
-    std::string getMsg() const;
 
     std::variant<std::string, pt, consts::LineType, long long> getLineParameter(const std::string& name);
 

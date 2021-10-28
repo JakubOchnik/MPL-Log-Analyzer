@@ -35,24 +35,6 @@ std::vector<KeyOperation> InputArgHandler::parseConditionArgs(size_t condStartIn
         }
     }
     return operations;
-    // wszystkie pary operacja-klucz
-    // wszystkie parametry do nich
-    // KLUCZ -> operacja, wartosc
-    /*
-    SKLADNIA:
-    -k  key
-    -e  equal
-    -c  contains
-    -g  greater
-    -l  less
-    -ge greater or equal
-    -le less or equal
-    Przyklad:
-    <K> <OP> <VAL>
-    -k source -e mpl -k 
-    1. tokenize
-    2. 
-    */
 }
 
 StartParams InputArgHandler::parseStartArgs()

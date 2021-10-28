@@ -1,27 +1,24 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
-#include <inputArgHandler.hpp>
-#include <consts/consts.hpp>
-#include <helpCommands.hpp>
 #include <fstream>
 #include <memory>
 #include <variant>
 #include <optional>
-#include <funcFactory.hpp>
 
+#include <inputArgHandler.hpp>
+#include <consts/consts.hpp>
+#include <funcFactory.hpp>
+#include <helpCommands.hpp>
 #include <line_types/logLine.hpp>
 #include <line_types/baseLine.hpp>
 #include <line_types/internalEntry.hpp>
 #include <helpCommands.hpp>
 #include <lib/utils.hpp>
 #include <lib/castUtils.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-using pt = boost::posix_time::ptime;
 
-
-#define FILENAME "mpl.log"
 using namespace std;
+
 int main(int argc, char* argv[])
 {
     InputArgHandler cmdline(argc, argv);
@@ -32,12 +29,9 @@ int main(int argc, char* argv[])
         HelpCommands::displayHelpCmd();
         return 0;
     }
-    // do sth with them
 
     auto conditionArgs = cmdline.parseConditionArgs(initialArgs.condStartIndex);
     
-    // is_request
-
     std::ifstream file(initialArgs.filePath);
 
     std::vector<std::shared_ptr<BaseLine>> db;
@@ -56,10 +50,6 @@ int main(int argc, char* argv[])
         file.close();
     }
 
-    //std::vector<std::string> keys = {"source", "type", "message"};
-    //std::vector<std::string> vals = {"MPL", "ERROR", "fp-1"};
-
-    //sample line
     std::vector<std::function<bool(std::string, std::shared_ptr<LogLine>&)>> filters;
     filters = FunctionFactory::createFiltersFromArgs(conditionArgs);
     if(!filters.size())
@@ -74,24 +64,28 @@ int main(int argc, char* argv[])
         conditionArgs.emplace_back("",consts::FilterOpSpecMap.at(std::string("-c").substr(1)), "");
     }
     
+    // Iterate over lines
     for(const auto& elem: db)
     {
         std::shared_ptr<InternalEntry> errorInstance;
+        // if lineInstance is a nullptr, it means that the entry it is an errorInstance
         std::shared_ptr<LogLine> lineInstance = CastUtils::downcast<LogLine>(elem);
-
         if(lineInstance == nullptr)
         {
             errorInstance = CastUtils::downcast<InternalEntry>(elem);
-            // everything for errorInstance
+            // nothing works for errorInstance yet, it's only stored
         }
         bool fail{false};
         // filters don't work for internal errors yet
+        // also, OR mode doesn't work yet
         if(lineInstance)
         {
+            // AND mode: iterate over filters vector, check every one of them for each line
             for(int i{0}; i<filters.size(); ++i)
             {
                 if(!filters[i](conditionArgs[i].value, lineInstance))
                 {
+                    // If any filter doesn't match, break and don't continue
                     fail = true;
                     break;
                 }
@@ -99,9 +93,9 @@ int main(int argc, char* argv[])
         }
         if(!fail && lineInstance)
         {
+            // if there was no fail, print the line
             std::cout << lineInstance->getFormattedOutput() << "\n";
         }
     }
-
     return 0;
 }
