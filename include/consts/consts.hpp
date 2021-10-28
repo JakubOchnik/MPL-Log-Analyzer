@@ -83,3 +83,26 @@ namespace consts
         const static std::string HELP = "-h";
     }
 }
+
+namespace textConsts
+{
+    const static std::string helpText = \
+"   usage: mplLogAnalyzer [ initial arguments ] [ key ] [ condition ] ... \n\
+    \n \
+    Avaliable initial arguments:\n\
+    -i      Input file\n\
+    -and    Set condition concatenation mode to AND\n\
+    -or     Set condition concatenation mode to OR\n\
+    -h      Display help message\n\
+    Key-condition arguments:\n\
+    -k      Key definition (e.g. time, message, jsonStr)\n\
+    -e      Condition: equals\n\
+    -c      Contition: contains\n\
+    -g      Condition: greater (NOT IMPLEMENTED)\n\
+    -l      Condition: less (NOT IMPLEMENTED)\n\
+    -ge     Condition: greater or equal (NOT IMPLEMENTED)\n\
+    -le     Condition: less or equal (NOT IMPLEMENTED)\n\
+    \n\
+    Example:\n\
+    ./mplLogAnalyzer -i mpl.log -and -k source -e mpl -k message -c fp-1\n";
+}

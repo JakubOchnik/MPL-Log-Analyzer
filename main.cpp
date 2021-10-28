@@ -13,7 +13,7 @@
 #include <line_types/logLine.hpp>
 #include <line_types/baseLine.hpp>
 #include <line_types/internalEntry.hpp>
-
+#include <helpCommands.hpp>
 #include <lib/utils.hpp>
 #include <lib/castUtils.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 
     if(initialArgs.isHelp)
     {
-        // display help
+        HelpCommands::displayHelpCmd();
         return 0;
     }
     // do sth with them
