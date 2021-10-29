@@ -35,46 +35,6 @@ public:
         return filters;
     }
 
-    static auto getEqualFilter(std::string& key, std::shared_ptr<LogLine>& line) 
-    {
-         switch(line->getLineParameter(key).index())
-         {
-            case 0:
-                return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
-                    [key](std::string value, std::shared_ptr<LogLine>& line){
-                        boost::to_lower(value);
-                        return std::get<std::string>(line->getLineParameter(key)) == value;
-                    }
-                };
-            case 1:
-                return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
-                    [key](std::string value, std::shared_ptr<LogLine>& line){
-                    // NOT IMPLEMENTED YET
-                        return false;
-                    }
-                };
-            case 2:
-                return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
-                    [key](std::string value, std::shared_ptr<LogLine>& line){
-                        return consts::LineTypeMap.at(value) == std::get<consts::LineType>(line->getLineParameter(key));
-                    }
-                };
-            case 3:
-                return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
-                    [key](std::string value, std::shared_ptr<LogLine>& line){
-                        return std::get<long long>(line->getLineParameter(key)) == std::stoll(value);
-                    }
-                };
-            default:
-                return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
-                    [key](std::string value, std::shared_ptr<LogLine>& line){
-                            return false;
-                    }
-                };
-         };
-    };
-
-
     static std::function<bool(std::string, std::shared_ptr<LogLine>&)> getEqualFilterVisitor(const std::string& key)
     {
         LogLine dummyBase;
@@ -83,20 +43,8 @@ public:
         // Dispatch, and then construct and return a fitting function
 
         // std::visit allows to execute a function on a currently stored type in variant
-
-        /*
-        overload allows us to avoid declaring () operator overloads,
-        e.g.
-        struct VisitFunction
-        {
-            void operator()(std::string& ) { return std::function<bool(std::string, std::shared_ptr<LogLine>&) {
-            ...
-        };
-        ...
-        return std::visit(VisitFunction(), )
-
-        It can provide better readability, however I have to rethink whether this approach is really better in this case.
-        */
+        // overload allows us to avoid declaring () operator overloads,
+        // It can provide better readability, however I have to rethink whether this approach is really better in this case.
 
         return std::visit(overload{
             // a lambda, which captures a key, takes std::string as a param, and then constructs and returns another lambda...
