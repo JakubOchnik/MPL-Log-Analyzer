@@ -35,6 +35,7 @@ public:
         return filters;
     }
 
+    // 1. variant.index() approach
     static auto getEqualFilter(std::string& key, std::shared_ptr<LogLine>& line) 
     {
          switch(line->getLineParameter(key).index())
@@ -74,7 +75,45 @@ public:
          };
     };
 
+    // 2. std::visit with no lambda overloading
+    struct VisitFunction
+    {
+        std::string tempKey = "";
+        boolFunc operator()(std::string& ) { return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
+            [key=tempKey](std::string value, std::shared_ptr<LogLine>& line){
+                        boost::to_lower(value);
+                        // check if stored parameter is equal to value
+                        return std::get<std::string>(line->getLineParameter(key)) == value;
+            }};
+        };
+        boolFunc operator()(consts::LineType&) { return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
+            [key=tempKey](std::string value, std::shared_ptr<LogLine>& line){
+                        boost::to_upper(value);
+                        return consts::LineTypeMap.at(value) == std::get<consts::LineType>(line->getLineParameter(key));
+            }};
+        };
+        boolFunc operator()(long long&) { return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
+            [key=tempKey](std::string value, std::shared_ptr<LogLine>& line){
+                        return std::get<long long>(line->getLineParameter(key)) == std::stoll(value);
+            }};
+        };
+        boolFunc operator()(pt&) { return std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
+            [key=tempKey](std::string value, std::shared_ptr<LogLine>& line){
+                        return std::get<long long>(line->getLineParameter(key)) == std::stoll(value);
+            }};
+        };
+    };
+    
+    static std::function<bool(std::string, std::shared_ptr<LogLine>&)> getEqualFilterVisitorNoLambda(const std::string& key)
+    {
+        LogLine dummyBase;
+        auto val = dummyBase.getLineParameter(key);
+        VisitFunction vf{key};
+        // Problem: how to pass the key?
+        return std::visit(VisitFunction(), val);
+    }
 
+    // 3. std::visit with lambda overloading
     static std::function<bool(std::string, std::shared_ptr<LogLine>&)> getEqualFilterVisitor(const std::string& key)
     {
         LogLine dummyBase;
@@ -134,6 +173,14 @@ public:
                     }
                 };
             },
+            [key](auto&) {
+                // Matches everything else, generic lambda
+                return std::function<bool(std::string, std::shared_ptr<LogLine&>)>{
+                    [](std::string value, std::shared_ptr<LogLine>& line){
+                        return false;
+                    }
+                };
+            }
         }, val);
     };
 
