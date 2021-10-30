@@ -30,17 +30,17 @@ using content_types = std::variant<std::string, pt, consts::LineType, long long>
 
 class LogLine: public BaseLine
 {
-    std::string lineType = "log";
+    std::string lineType{"log"};
 
-    std::string source = "";
+    std::string source;
     pt time;
-    consts::LineType type = consts::LineType::debug;
-    long long thd = 0;
-    long long id = 0;
-    std::string component = "";
+    consts::LineType type{consts::LineType::debug};
+    long long thd{};
+    long long id{};
+    std::string component;
 
-    std::string message = "";
-    std::string jsonStr = "";
+    std::string message;
+    std::string jsonStr;
     
     std::unordered_map<std::string, content_types> lineContents;
 
