@@ -51,7 +51,7 @@ public:
     LogLine(std::string& rawLine);
     LogLine();
 
-    std::variant<std::string, pt, consts::LineType, long long> getLineParameter(const std::string& name);
+    std::variant<std::string, pt, consts::LineType, long long> getLineParameter(const std::string& name) const;
 
-    [[nodiscard]] const std::string getFormattedOutput();
+    [[nodiscard]] const std::string getFormattedOutput() const;
 };

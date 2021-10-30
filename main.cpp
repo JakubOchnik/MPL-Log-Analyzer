@@ -34,29 +34,31 @@ int main(int argc, char* argv[])
     
     std::ifstream file(initialArgs.filePath);
 
-    std::vector<std::shared_ptr<BaseLine>> db;
+    std::vector<LogLine> logDb;
+    std::vector<InternalEntry> errorDb;
+
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
             if(!Utils::isInternalStart(line) && line.size() > 0)
             {
-                db.emplace_back(new LogLine(line));
+                logDb.emplace_back(line);
             }
             else if(line.size() > 0)
             {
-                db.emplace_back(new InternalEntry(line, file));
+                errorDb.emplace_back(line, file);
             }
         }
         file.close();
     }
 
-    std::vector<std::function<bool(std::string, std::shared_ptr<LogLine>&)>> filters;
+    std::vector<std::function<bool(std::string, const LogLine&)>> filters;
     filters = FunctionFactory::createFiltersFromArgs(conditionArgs);
     if(!filters.size())
     {
         // If there are no filters, match all (just display all logs)
-        auto trueFilter = std::function<bool(std::string, std::shared_ptr<LogLine>&)> {
-                    [](std::string value, std::shared_ptr<LogLine>& line){
+        auto trueFilter = std::function<bool(std::string, const LogLine&)> {
+                    [](std::string value, const LogLine& line){
                         return true;
                     }
                 };
@@ -65,36 +67,25 @@ int main(int argc, char* argv[])
     }
     
     // Iterate over lines
-    for(const auto& elem: db)
+    for(const auto& elem: logDb)
     {
-        std::shared_ptr<InternalEntry> errorInstance;
-        // if lineInstance is a nullptr, it means that the entry it is an errorInstance
-        std::shared_ptr<LogLine> lineInstance{CastUtils::downcast<LogLine>(elem)};
-        if(lineInstance == nullptr)
-        {
-            errorInstance = CastUtils::downcast<InternalEntry>(elem);
-            // nothing works for errorInstance yet, it's only stored
-        }
         bool fail{false};
         // filters don't work for internal errors yet
         // also, OR mode doesn't work yet
-        if(lineInstance)
-        {
             // AND mode: iterate over filters vector, check every one of them for each line
-            for(int i{0}; i<filters.size(); ++i)
+        for(int i{0}; i<filters.size(); ++i)
+        {
+            if(!filters[i](conditionArgs[i].value, elem))
             {
-                if(!filters[i](conditionArgs[i].value, lineInstance))
-                {
-                    // If any filter doesn't match, break and don't continue
-                    fail = true;
-                    break;
-                }
+                // If any filter doesn't match, break and don't continue
+                fail = true;
+                break;
             }
         }
-        if(!fail && lineInstance)
+        if(!fail)
         {
             // if there was no fail, print the line
-            std::cout << lineInstance->getFormattedOutput() << "\n";
+            std::cout << elem.getFormattedOutput() << "\n";
         }
     }
     return 0;

@@ -103,17 +103,17 @@ void LogLine::parseLine(std::string& rawLine)
     }
 }
 
-std::variant<std::string, pt, consts::LineType, long long> LogLine::getLineParameter(const std::string& name)
+std::variant<std::string, pt, consts::LineType, long long> LogLine::getLineParameter(const std::string& name) const
 {
     if(lineContents.find(name) == lineContents.end())
     {
         // TODO error handling
         return "error";
     }
-    return lineContents[name];
+    return lineContents.at(name);
 }
 
-const std::string LogLine::getFormattedOutput()
+const std::string LogLine::getFormattedOutput() const
 {
     
     std::string fTime{boost::posix_time::to_iso_extended_string(time)};
