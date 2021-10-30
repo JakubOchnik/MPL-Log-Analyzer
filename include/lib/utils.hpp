@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
-#include <boost/algorithm/string.hpp>
 #include <sstream>
 #include <iomanip>
+#include <boost/algorithm/string.hpp>
 
 class Utils
 {

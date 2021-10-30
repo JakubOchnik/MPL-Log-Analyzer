@@ -1,11 +1,11 @@
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <functional>
 #include <boost/algorithm/string.hpp>
 #include <consts/consts.hpp>
 #include <inputArgHandler.hpp>
 #include <line_types/logLine.hpp>
-#include <algorithm>
-#include <functional>
 
 // Create an object (a struct) which inherits from several lambdas ...
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };

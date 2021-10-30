@@ -3,7 +3,7 @@
 
 class BaseLine
 {
-    std::string lineType = "base";
+    std::string lineType{"base"};
 public:
     virtual std::string getLineType() const;
 };

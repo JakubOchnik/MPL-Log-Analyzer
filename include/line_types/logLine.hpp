@@ -1,15 +1,13 @@
 #pragma once 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <consts/consts.hpp>
-#include <vector>
 #include <boost/algorithm/string.hpp>
+#include <vector>
 #include <string>
+#include <variant>
 #include <iostream>
-#include <optional>
+#include <consts/consts.hpp>
 #include <lib/utils.hpp>
 #include <line_types/baseLine.hpp>
-#include <iostream>
-#include <variant>
 
 enum class ParseStage
 {
