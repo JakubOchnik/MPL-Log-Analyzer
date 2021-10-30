@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <tuple>
 
 #include <helpCommands.hpp>
 #include <consts/consts.hpp>
@@ -10,10 +11,11 @@
 
 struct KeyOperation
 {
-    KeyOperation(std::string k, consts::FilterOperationSpecifier o, std::string v):key(k), op(o), value(v){};
+    KeyOperation(std::string k, consts::FilterOperationSpecifier o, std::string v, bool n):key(k), op(o), value(v), negation(n){};
     const std::string key;
     const consts::FilterOperationSpecifier op;
     const std::string value;
+    bool negation;
 };
 
 struct StartParams
@@ -33,7 +35,6 @@ private:
 public:
     InputArgHandler(int ac, char* av[]);
 
-    KeyOperation parseCondition(const std::string& key, const std::string& op, const std::string& val);
     std::vector<KeyOperation> parseConditionArgs(size_t condStartIndex);
     StartParams parseStartArgs();
 

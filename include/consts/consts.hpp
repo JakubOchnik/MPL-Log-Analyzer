@@ -2,7 +2,9 @@
 #include <vector>
 #include <array>
 #include <map>
+#include <unordered_map>
 #include <string>
+#include <tuple>
 
 namespace consts
 {
@@ -35,14 +37,8 @@ namespace consts
 
     enum class FilterOperationSpecifier
     {
-        contains,
-        eq
-    };
-
-    enum class FilterOperationType
-    {
-        request,
-        response
+        CONTAINS,
+        EQUALS
     };
 
     namespace condInputParams
@@ -54,19 +50,21 @@ namespace consts
         const static std::string NOT_CONTAINS = "-nc";
     }
 
+    const static std::unordered_map<std::string, std::pair<FilterOperationSpecifier, bool>> PairParamMap = {
+        {"-e", std::make_pair(FilterOperationSpecifier::EQUALS,false)},
+        {"-c", std::make_pair(FilterOperationSpecifier::CONTAINS, false)},
+        {"-ne", std::make_pair(FilterOperationSpecifier::EQUALS, true)},
+        {"-nc", std::make_pair(FilterOperationSpecifier::CONTAINS, true)}  
+    };
+
     const static std::map<std::string, CoreOperation> CoreOpMap = {
         {"filter", CoreOperation::filter},
         {"sort", CoreOperation::sort}
     };
 
     const static std::map<std::string, FilterOperationSpecifier> FilterOpSpecMap = {
-        {"c", FilterOperationSpecifier::contains},
-        {"e", FilterOperationSpecifier::eq}
-    };
-
-    const static std::map<std::string, FilterOperationType> FilterOpType = {
-        {"request", FilterOperationType::request},
-        {"response", FilterOperationType::response}
+        {"c", FilterOperationSpecifier::CONTAINS},
+        {"e", FilterOperationSpecifier::EQUALS}
     };
 
     enum class CondConcatMode
@@ -88,21 +86,25 @@ namespace textConsts
 {
     const static std::string helpText = \
 "   usage: mplLogAnalyzer [ initial arguments ] [ key ] [ condition ] ... \n\
-    \n \
+    \n\
     Avaliable initial arguments:\n\
     -i      Input file\n\
     -and    Set condition concatenation mode to AND\n\
     -or     Set condition concatenation mode to OR\n\
     -h      Display help message\n\
+    \n\
     Key-condition arguments:\n\
-    -k      Key definition (e.g. time, message, jsonStr)\n\
-    -e      Condition: equals\n\
-    -c      Contition: contains\n\
-    -g      Condition: greater (NOT IMPLEMENTED)\n\
-    -l      Condition: less (NOT IMPLEMENTED)\n\
-    -ge     Condition: greater or equal (NOT IMPLEMENTED)\n\
-    -le     Condition: less or equal (NOT IMPLEMENTED)\n\
+    -k      Key definition \n\
+    -(n)e   Condition: (not)equals\n\
+    -(n)c   Contition: (not)contains\n\
+    -(n)g   Condition: (not)greater (NOT IMPLEMENTED)\n\
+    -(n)l   Condition: (not)less (NOT IMPLEMENTED)\n\
+    -(n)ge  Condition: (not)greater or equal (NOT IMPLEMENTED)\n\
+    -(n)le  Condition: (not)less or equal (NOT IMPLEMENTED)\n\
+    \n\
+    Available keys:\n\
+    -time, source, type, thd, id, component, message, jsonStr\n\
     \n\
     Example:\n\
-    ./mplLogAnalyzer -i mpl.log -and -k source -e mpl -k message -c fp-1\n";
+    ./mplLogAnalyzer -i mpl.log -and -k source -e mpl -k message -nc fp-1\n";
 }

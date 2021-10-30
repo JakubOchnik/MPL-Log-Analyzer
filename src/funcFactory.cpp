@@ -5,19 +5,19 @@ std::vector<std::function<bool(std::string, const LogLine&)>> FunctionFactory::c
     std::vector<std::function<bool(std::string, const LogLine&)>> filters;
     for(auto& entry: ops)
     {
-        if(entry.op == consts::FilterOperationSpecifier::eq)
+        if(entry.op == consts::FilterOperationSpecifier::EQUALS)
         {
-            filters.push_back(getEqualFilterVisitor(entry.key));
+            filters.push_back(getEqualFilterVisitor(entry.key, entry.negation));
         }
         else
         {
-            filters.push_back(getContainsFilterVisitor(entry.key));
+            filters.push_back(getContainsFilterVisitor(entry.key, entry.negation));
         }
     }
     return filters;
 }
 
-std::function<bool(std::string, const LogLine&)> FunctionFactory::getEqualFilterVisitor(const std::string& key)
+std::function<bool(std::string, const LogLine&)> FunctionFactory::getEqualFilterVisitor(const std::string& key, const bool& neg)
 {
     LogLine dummyBase;
     auto val = dummyBase.getLineParameter(key);
@@ -30,35 +30,44 @@ std::function<bool(std::string, const LogLine&)> FunctionFactory::getEqualFilter
 
     return std::visit(overload{
         // a lambda, which captures a key, takes std::string as a param, and then constructs and returns another lambda...
-        [key](std::string&) {
+        [key, neg](std::string&) {
             // out actual filter, which will be packed into std::function in order to put it in a vector
             return std::function<bool(std::string, const LogLine&)> {
                 // captures a key, takes a string value and actually processed line as arguments 
-                [key](std::string value, const LogLine& line){
+                [key, neg](std::string value, const LogLine& line){
                     boost::to_lower(value);
                     // check if stored parameter is equal to value
-                    return std::get<std::string>(line.getLineParameter(key)) == value;
+                    if(!neg)
+                        return std::get<std::string>(line.getLineParameter(key)) == value;
+                    else
+                        return !(std::get<std::string>(line.getLineParameter(key)) == value);
                 }
             };
         },
-        [key](consts::LineType&) {
+        [key, neg](consts::LineType&) {
             return std::function<bool(std::string, const LogLine&)> {
-                [key](std::string value, const LogLine& line){
+                [key, neg](std::string value, const LogLine& line){
                     boost::to_upper(value);
-                    return consts::LineTypeMap.at(value) == std::get<consts::LineType>(line.getLineParameter(key));
+                    if(!neg)
+                        return consts::LineTypeMap.at(value) == std::get<consts::LineType>(line.getLineParameter(key));
+                    else
+                        return !(consts::LineTypeMap.at(value) == std::get<consts::LineType>(line.getLineParameter(key)));
                 }
             };
         },
-        [key](long long&) {
+        [key, neg](long long&) {
             return std::function<bool(std::string, const LogLine&)> {
-                [key](std::string value, const LogLine& line){
-                    return std::get<long long>(line.getLineParameter(key)) == std::stoll(value);
+                [key, neg](std::string value, const LogLine& line){
+                    if(!neg)
+                        return std::get<long long>(line.getLineParameter(key)) == std::stoll(value);
+                    else
+                        return !(std::get<long long>(line.getLineParameter(key)) == std::stoll(value));
                 }
             };
         },
-        [key](pt&) {
+        [key, neg](pt&) {
             return std::function<bool(std::string, const LogLine&)> {
-                [key](std::string value, const LogLine& line){
+                [key, neg](std::string value, const LogLine& line){
                     // NOT IMPLEMENTED TODO
                     return false;
                 }
@@ -67,15 +76,18 @@ std::function<bool(std::string, const LogLine&)> FunctionFactory::getEqualFilter
     }, val);
 };
 
-std::function<bool(std::string, const LogLine&)> FunctionFactory::getContainsFilterVisitor(const std::string& key)
+std::function<bool(std::string, const LogLine&)> FunctionFactory::getContainsFilterVisitor(const std::string& key, const bool& neg)
 {
     LogLine dummyBase;
     auto val = dummyBase.getLineParameter(key);
     return std::visit(overload{
-        [key](std::string&) {
+        [key, neg](std::string&) {
             return std::function<bool(std::string, const LogLine&)> {
-                [key](std::string value, const LogLine& line){
-                    return boost::algorithm::contains(std::get<std::string>(line.getLineParameter(key)), value);
+                [key, neg](std::string value, const LogLine& line){
+                    if(!neg)
+                        return boost::algorithm::contains(std::get<std::string>(line.getLineParameter(key)), value);
+                    else
+                        return !(boost::algorithm::contains(std::get<std::string>(line.getLineParameter(key)), value));
                 }
             };
         },

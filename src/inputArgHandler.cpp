@@ -5,12 +5,6 @@ InputArgHandler::InputArgHandler(const int ac, char* av[]): argCount(ac), args(a
 
 }
 
-KeyOperation InputArgHandler::parseCondition(const std::string& key, const std::string& op, const std::string& val)
-{
-    std::string parsedOp = op.substr(1);
-    return KeyOperation{key, consts::FilterOpSpecMap.at(parsedOp), val};
-}
-
 std::vector<KeyOperation> InputArgHandler::parseConditionArgs(size_t condStartIndex)
 {
     std::vector<KeyOperation> operations;
@@ -27,11 +21,10 @@ std::vector<KeyOperation> InputArgHandler::parseConditionArgs(size_t condStartIn
             // Throw exception
         }
 
-        if(i+3 < argCount && (args[i+2] == consts::condInputParams::CONTAINS || args[i+2] == consts::condInputParams::EQUALS))
+        if(i+3 < argCount && (consts::PairParamMap.find(args[i+2]) != consts::PairParamMap.end()))
         {
-            op = args[i+2];
-            val = args[i+3];
-            operations.emplace_back(key, consts::FilterOpSpecMap.at(op.substr(1)), val);
+            const auto& [op, neg] = consts::PairParamMap.at(args[i+2]);
+            operations.emplace_back(key, op, args[i+3], neg);
         }
     }
     return operations;

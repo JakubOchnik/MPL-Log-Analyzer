@@ -19,6 +19,6 @@ class FunctionFactory
 public:
     static std::vector<std::function<bool(std::string, const LogLine&)>> createFiltersFromArgs(std::vector<KeyOperation> ops);
 
-    static std::function<bool(std::string, const LogLine&)> getEqualFilterVisitor(const std::string& key);
-    static std::function<bool(std::string, const LogLine&)> getContainsFilterVisitor(const std::string& key);
+    static std::function<bool(std::string, const LogLine&)> getEqualFilterVisitor(const std::string& key, const bool& neg);
+    static std::function<bool(std::string, const LogLine&)> getContainsFilterVisitor(const std::string& key, const bool& neg);
 };
