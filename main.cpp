@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
     {
         std::shared_ptr<InternalEntry> errorInstance;
         // if lineInstance is a nullptr, it means that the entry it is an errorInstance
-        std::shared_ptr<LogLine> lineInstance = CastUtils::downcast<LogLine>(elem);
+        std::shared_ptr<LogLine> lineInstance{CastUtils::downcast<LogLine>(elem)};
         if(lineInstance == nullptr)
         {
             errorInstance = CastUtils::downcast<InternalEntry>(elem);
