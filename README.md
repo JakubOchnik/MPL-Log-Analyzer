@@ -1,5 +1,5 @@
 # MPL Log Analyzer
-C++ program used for filtering MPL logs (used on ADVA F4/F8 products).
+C++ program used for filtering MPL logs (used on ADVA FSP 3000/FSP 150 products).
 ## Working
 - AND concatenation mode
 - Equals and contains conditions (with negations)
