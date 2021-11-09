@@ -67,22 +67,35 @@ int main(int argc, char* argv[])
     for(const auto& elem: logDb)
     {
         bool fail{false};
-        // filters don't work for internal errors yet
-        // also, OR mode doesn't work yet
-            // AND mode: iterate over filters vector, check every one of them for each line
-        for(int i{0}; i<filters.size(); ++i)
+        // AND mode: iterate over filters vector, check every one of them for each line
+        if(initialArgs.mode == consts::CondConcatMode::concat_and)
         {
-            if(!filters[i](conditionArgs[i].value, elem))
+            for(int i{0}; i<filters.size(); ++i)
             {
-                // If any filter doesn't match, break and don't continue
-                fail = true;
-                break;
+                if(!filters[i](conditionArgs[i].value, elem))
+                {
+                    // If any filter doesn't match, break and don't continue
+                    fail = true;
+                    break;
+                }
+            }
+            if(!fail)
+            {
+                // if there was no fail, print the line
+                std::cout << elem.getFormattedOutput() << "\n";
             }
         }
-        if(!fail)
+        else
         {
-            // if there was no fail, print the line
-            std::cout << elem.getFormattedOutput() << "\n";
+            for(int i{0}; i<filters.size(); ++i)
+            {
+                if(filters[i](conditionArgs[i].value, elem))
+                {
+                    // If any filter matches, print the line and break
+                    std::cout << elem.getFormattedOutput() << "\n";
+                    break;
+                }
+            }
         }
     }
     return 0;
