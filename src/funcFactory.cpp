@@ -68,8 +68,10 @@ std::function<bool(std::string, const LogLine&)> FunctionFactory::getEqualFilter
         [key, neg](pt&) {
             return std::function<bool(std::string, const LogLine&)> {
                 [key, neg](std::string value, const LogLine& line){
-                    // NOT IMPLEMENTED TODO
-                    return false;
+                    if(!neg)
+                        return std::get<pt>(line.getLineParameter(key)) == Utils::string2pt(value);
+                    else
+                        return !(std::get<pt>(line.getLineParameter(key)) == Utils::string2pt(value));
                 }
             };
         },

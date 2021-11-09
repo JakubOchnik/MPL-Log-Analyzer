@@ -36,3 +36,10 @@ std::string Utils::int2hex(long long val, int width)
     ss << std::setfill('0') << std::setw(width) << std::hex << (val|0);
     return ss.str();
 }
+
+pt Utils::string2pt(const std::string& source)
+{
+    std::string srcCp = source;
+    srcCp.replace(source.find("T"), 1, " ");
+    return boost::posix_time::time_from_string(srcCp);
+}
