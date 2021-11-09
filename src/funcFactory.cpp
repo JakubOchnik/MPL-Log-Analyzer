@@ -98,3 +98,27 @@ std::function<bool(std::string, const LogLine&)> FunctionFactory::getContainsFil
         [](pt&){return boolFunc{[](std::string, const LogLine&){return false;}};},
     }, val);
 };
+
+std::function<bool(std::string, const LogLine&)> FunctionFactory::getInequalityFilter(const std::string& key, const bool& neg)
+{
+    LogLine dummyBase;
+    auto val = dummyBase.getLineParameter(key);
+    return std::visit(overload{
+        [key, neg](std::string&){return boolFunc{[](std::string, const LogLine&){return false;}};},
+        [](consts::LineType&){return boolFunc{[](std::string, const LogLine&){return false;}};},
+        [key, neg](long long&) {
+            return boolFunc{
+                [key, neg](std::string, const LogLine&){
+                    return false;
+                }
+            };
+        },
+        [key, neg](pt&){
+            return boolFunc {
+                [key, neg](std::string, const LogLine&){
+                    return false;
+                }
+            };
+        },
+    }, val);
+}
