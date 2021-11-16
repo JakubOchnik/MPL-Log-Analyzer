@@ -38,7 +38,8 @@ namespace consts
     enum class FilterOperationSpecifier
     {
         CONTAINS,
-        EQUALS
+        EQUALS,
+        
     };
 
     namespace condInputParams
@@ -79,6 +80,12 @@ namespace consts
         const static std::string MODE_OR = "-or";
         const static std::string MODE_AND = "-and";
         const static std::string HELP = "-h";
+    }
+
+    namespace inequalityFilter
+    {
+        const static std::string LESS = "<";
+        const static std::string MORE = ">";
     }
 }
 
