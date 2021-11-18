@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
                     }
                 };
         filters.push_back(trueFilter);
-        conditionArgs.emplace_back("",consts::FilterOpSpecMap.at(std::string("-c").substr(1)), "", false);
+        conditionArgs.emplace_back("", consts::FilterOperationSpecifier::CONTAINS, "", false);
     }
     
     // Iterate over lines

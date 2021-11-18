@@ -1,10 +1,8 @@
 #pragma once
 #include <vector>
-#include <array>
 #include <map>
 #include <unordered_map>
 #include <string>
-#include <tuple>
 
 namespace consts
 {
@@ -46,10 +44,6 @@ namespace consts
     namespace condInputParams
     {
         const static std::string KEY = "-k";
-        const static std::string EQUALS = "-e";
-        const static std::string CONTAINS = "-c";
-        const static std::string NOT_EQUALS = "-ne";
-        const static std::string NOT_CONTAINS = "-nc";
     }
 
     const static std::unordered_map<std::string, FilterOperationSpecifier> PairParamMap = {
@@ -57,16 +51,6 @@ namespace consts
         {"c", FilterOperationSpecifier::CONTAINS},
         {"l", FilterOperationSpecifier::LESS},
         {"g", FilterOperationSpecifier::GREATER}
-    };
-
-    const static std::map<std::string, CoreOperation> CoreOpMap = {
-        {"filter", CoreOperation::filter},
-        {"sort", CoreOperation::sort}
-    };
-
-    const static std::map<std::string, FilterOperationSpecifier> FilterOpSpecMap = {
-        {"c", FilterOperationSpecifier::CONTAINS},
-        {"e", FilterOperationSpecifier::EQUALS}
     };
 
     const static std::vector<std::string> allowedCoreOps = {
