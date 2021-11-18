@@ -39,7 +39,8 @@ namespace consts
     {
         CONTAINS,
         EQUALS,
-        
+        LESS,
+        GREATER
     };
 
     namespace condInputParams
@@ -51,11 +52,11 @@ namespace consts
         const static std::string NOT_CONTAINS = "-nc";
     }
 
-    const static std::unordered_map<std::string, std::pair<FilterOperationSpecifier, bool>> PairParamMap = {
-        {"-e", std::make_pair(FilterOperationSpecifier::EQUALS,false)},
-        {"-c", std::make_pair(FilterOperationSpecifier::CONTAINS, false)},
-        {"-ne", std::make_pair(FilterOperationSpecifier::EQUALS, true)},
-        {"-nc", std::make_pair(FilterOperationSpecifier::CONTAINS, true)}  
+    const static std::unordered_map<std::string, FilterOperationSpecifier> PairParamMap = {
+        {"e", FilterOperationSpecifier::EQUALS},
+        {"c", FilterOperationSpecifier::CONTAINS},
+        {"l", FilterOperationSpecifier::LESS},
+        {"g", FilterOperationSpecifier::GREATER}
     };
 
     const static std::map<std::string, CoreOperation> CoreOpMap = {
@@ -66,6 +67,13 @@ namespace consts
     const static std::map<std::string, FilterOperationSpecifier> FilterOpSpecMap = {
         {"c", FilterOperationSpecifier::CONTAINS},
         {"e", FilterOperationSpecifier::EQUALS}
+    };
+
+    const static std::vector<std::string> allowedCoreOps = {
+        "e",
+        "c",
+        "l",
+        "g"
     };
 
     enum class CondConcatMode

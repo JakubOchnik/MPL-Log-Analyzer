@@ -21,10 +21,15 @@ std::vector<KeyOperation> InputArgHandler::parseConditionArgs(size_t condStartIn
             // Throw exception
         }
 
-        if(i+3 < argCount && (consts::PairParamMap.find(args[i+2]) != consts::PairParamMap.end()))
+        if(i+3 < argCount)
         {
-            const auto& [op, neg] = consts::PairParamMap.at(args[i+2]);
-            operations.emplace_back(key, op, args[i+3], neg);
+            auto parsedOp = Utils::parseOperation(args[i+2]);
+            if(parsedOp.coreOp.empty())
+            {
+                continue;
+            }
+            auto op = consts::PairParamMap.at(parsedOp.coreOp);
+            operations.emplace_back(key, op, args[i+3], parsedOp.neg, parsedOp.equalGl);
         }
     }
     return operations;
@@ -36,7 +41,7 @@ StartParams InputArgHandler::parseStartArgs()
     consts::CondConcatMode concatMode{consts::CondConcatMode::concat_and};
 
     size_t i{1};
-    while(args[i] != consts::condInputParams::KEY && i < argCount)
+    while(i < argCount && args[i] != consts::condInputParams::KEY)
     {
         if(args[i] == consts::startInputParams::HELP)
         {

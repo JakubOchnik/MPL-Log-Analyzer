@@ -5,20 +5,21 @@ std::vector<std::function<bool(std::string, const LogLine&)>> FunctionFactory::c
     std::vector<std::function<bool(std::string, const LogLine&)>> filters;
     for(auto& entry: ops)
     {
-        if(entry.op == consts::FilterOperationSpecifier::EQUALS)
+        switch(entry.op)
         {
-            filters.push_back(getEqualFilterVisitor(entry.key, entry.negation));
+            case consts::FilterOperationSpecifier::EQUALS:
+                filters.push_back(getEqualFilterVisitor(entry.key, entry.negation));
+                break;
+            case consts::FilterOperationSpecifier::CONTAINS:
+                filters.push_back(getContainsFilterVisitor(entry.key, entry.negation));
+                break;
+            case consts::FilterOperationSpecifier::LESS:
+                filters.push_back(getInequalityFilter(entry.key, entry.negation, entry.equals, entry.op));
+                break;
+            case consts::FilterOperationSpecifier::GREATER:
+                filters.push_back(getInequalityFilter(entry.key, entry.negation, entry.equals, entry.op));
+                break;
         }
-        else if(entry.op == consts::FilterOperationSpecifier::CONTAINS)
-        {
-            filters.push_back(getContainsFilterVisitor(entry.key, entry.negation));
-        }
-        /*
-        else if(entry.op == consts::FilterOperationSpecifier::LESS)
-        {
-
-        }
-        */
     }
     return filters;
 }
@@ -105,15 +106,15 @@ std::function<bool(std::string, const LogLine&)> FunctionFactory::getContainsFil
     }, val);
 };
 
-std::function<bool(std::string, const LogLine&)> FunctionFactory::getInequalityFilter(const std::string& key, const bool& neg, const bool& eq, const std::string& symbol)
+std::function<bool(std::string, const LogLine&)> FunctionFactory::getInequalityFilter(const std::string& key, const bool& neg, const bool& eq, consts::FilterOperationSpecifier op)
 {
     LogLine dummyBase;
     auto val = dummyBase.getLineParameter(key);
     return std::visit(overload{
         [key, neg](std::string&){return boolFunc{[](std::string, const LogLine&){return false;}};},
         [](consts::LineType&){return boolFunc{[](std::string, const LogLine&){return false;}};},
-        [key, neg, eq, symbol](long long&) {
-            return symbol == consts::inequalityFilter::LESS ? boolFunc{
+        [key, neg, eq, op](long long&) {
+            return op == consts::FilterOperationSpecifier::LESS ? boolFunc{
                 [key, neg, eq](std::string value, const LogLine& line){
                     long long srcVal{std::get<long long>(line.getLineParameter(key))};
                     long long userVal{std::stoll(value)};
@@ -128,11 +129,15 @@ std::function<bool(std::string, const LogLine&)> FunctionFactory::getInequalityF
                 }
             };
         },
-        [key, neg, eq, symbol](pt&){
-            return symbol == consts::inequalityFilter::LESS ? boolFunc{
+        [key, neg, eq, op](pt&){
+            return op == consts::FilterOperationSpecifier::LESS ? boolFunc{
                 [key, neg, eq](std::string value, const LogLine& line){
                     pt srcVal{std::get<pt>(line.getLineParameter(key))};
-                    value.replace(value.find("T"), 1, " ");
+                    size_t sepIndex{value.find("T")};
+                    if(sepIndex != std::string::npos)
+                    {
+                        value.replace(sepIndex, 1, " ");
+                    }
                     pt userVal{boost::posix_time::time_from_string(value)};
                     return (srcVal < userVal) || (eq && srcVal == userVal);
                 }
@@ -140,7 +145,11 @@ std::function<bool(std::string, const LogLine&)> FunctionFactory::getInequalityF
             boolFunc{
                 [key, neg, eq](std::string value, const LogLine& line){
                     pt srcVal{std::get<pt>(line.getLineParameter(key))};
-                    value.replace(value.find("T"), 1, " ");
+                    size_t sepIndex{value.find("T")};
+                    if(sepIndex != std::string::npos)
+                    {
+                        value.replace(sepIndex, 1, " ");
+                    }
                     pt userVal{boost::posix_time::time_from_string(value)};
                     return (srcVal > userVal) || (eq && srcVal == userVal);
                 }

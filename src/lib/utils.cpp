@@ -43,3 +43,46 @@ pt Utils::string2pt(const std::string& source)
     srcCp.replace(source.find("T"), 1, " ");
     return boost::posix_time::time_from_string(srcCp);
 }
+
+bool Utils::validateCoreOp(const std::string& op)
+{
+    using namespace consts;
+    return std::find(allowedCoreOps.begin(), allowedCoreOps.end(), op) != allowedCoreOps.end();
+}
+
+RawOpStruct Utils::parseOperation(const std::string& op)
+{
+    if(op.empty() || op.size() == 1)
+    {
+        return RawOpStruct{};
+    }
+    // -e -c -ne -nc | -l -g -le -ge -nle -nge
+    std::string parsedOp{op.substr(1)};
+    if(parsedOp.size() == 1 && validateCoreOp(parsedOp))
+    {
+        // e c l g
+        return RawOpStruct{parsedOp, false, false};
+    }
+    else if(parsedOp.size() == 2)
+    {
+        if(parsedOp[0] == 'n' && validateCoreOp(parsedOp.substr(1)))
+        {
+            // ne nc
+            return RawOpStruct{parsedOp.substr(1), true, false};
+        }
+        else if(validateCoreOp(parsedOp.substr(0,1)))
+        {
+            // le ge
+            return RawOpStruct{parsedOp.substr(0,1), false, true};
+        }
+    }
+    else if(parsedOp.size() == 3)
+    {
+        // nle nge
+        if(parsedOp[0] == 'n' && parsedOp[2] == 'e' && validateCoreOp(parsedOp.substr(1,1)))
+        {
+            return RawOpStruct{std::string{parsedOp[1]}, true, true};
+        }
+    }
+    return RawOpStruct{};
+}

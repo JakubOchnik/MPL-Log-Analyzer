@@ -5,17 +5,20 @@
 #include <tuple>
 
 #include <helpCommands.hpp>
+#include <lib/utils.hpp>
 #include <consts/consts.hpp>
 #include <boost/algorithm/string.hpp>
 
 
 struct KeyOperation
 {
-    KeyOperation(std::string k, consts::FilterOperationSpecifier o, std::string v, bool n):key(k), op(o), value(v), negation(n){};
+    KeyOperation(std::string k, consts::FilterOperationSpecifier o, std::string v, bool n):key(k), op(o), value(v), negation(n), equals(false){};
+    KeyOperation(std::string k, consts::FilterOperationSpecifier o, std::string v, bool n, bool eq):key(k), op(o), value(v), negation(n), equals(eq){};
     const std::string key;
     const consts::FilterOperationSpecifier op;
     const std::string value;
     bool negation;
+    bool equals;
 };
 
 struct StartParams

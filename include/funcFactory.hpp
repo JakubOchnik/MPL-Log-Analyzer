@@ -21,5 +21,5 @@ public:
 
     static std::function<bool(std::string, const LogLine&)> getEqualFilterVisitor(const std::string& key, const bool& neg);
     static std::function<bool(std::string, const LogLine&)> getContainsFilterVisitor(const std::string& key, const bool& neg);
-    static std::function<bool(std::string, const LogLine&)> getInequalityFilter(const std::string& key, const bool& neg, const bool& eq, const std::string& symbol);
+    static std::function<bool(std::string, const LogLine&)> getInequalityFilter(const std::string& key, const bool& neg, const bool& eq, consts::FilterOperationSpecifier symbol);
 };
