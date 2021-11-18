@@ -2,12 +2,11 @@
 A command-line C++ program which can be used for filtering MPL logs (present on ADVA FSP 3000/FSP 150 networking solutions).
 ## Working
 - AND/OR concatenation mode
-- Equals and contains conditions (with negations)
+- 'Equals', 'contains', 'greater' and 'less' conditions (with different modifiers)
 - Support for filtering strings, integers and POSIX time
 ## To do in the future:
 - Grouping condition modes
 - Error handling
-- Support for other conditions, such as greater, less etc.
 - Sorting algorithms
 - Faster I/O (reading the file)
 ## How to use it?
@@ -27,10 +26,10 @@ Key-condition arguments:
 -k      Key definition
 -(n)e   Condition: (not)equals
 -(n)c   Contition: (not)contains
--(n)g   Condition: (not)greater (NOT IMPLEMENTED)
--(n)l   Condition: (not)less (NOT IMPLEMENTED)
--(n)ge  Condition: (not)greater or equal (NOT IMPLEMENTED)
--(n)le  Condition: (not)less or equal (NOT IMPLEMENTED)
+-(n)g   Condition: (not)greater
+-(n)l   Condition: (not)less
+-(n)ge  Condition: (not)greater or equal
+-(n)le  Condition: (not)less or equal
 ```
 Available keys:  
 ```
