@@ -37,7 +37,7 @@ time, source, type, thd, id, component, message, jsonStr
 ```
 Example:
 ```
-./mplLogAnalyzer -i mpl.log -and -k source -e mpl -k message -nc fp-1\n";
+./mplLogAnalyzer -i mpl.log -and -k source -e mpl -k message -nc fp-1
 ```
 ## Dependencies
 - Boost 1.71
